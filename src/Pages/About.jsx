@@ -13,7 +13,7 @@ const About = () => {
     const spendingData = [
         { month: 'Jan', amount: 1200 },
         { month: 'Feb', amount: 900 },
-        { month: 'Mar', amount: 2150 }, // Spike
+        { month: 'Mar', amount: 2150 }, 
         { month: 'Apr', amount: 1500 },
     ];
     
@@ -101,8 +101,6 @@ const About = () => {
                         ))}
                     </div>
                 </div>
-
-                {/* Right Column: Recommendations? History? */}
                  <div className='bg-green-50/50 p-6 rounded-xl border border-green-100'>
                     <h3 className='text-lg font-bold text-gray-800 mb-4'>Shopping Tip</h3>
                     <div className="p-4 bg-white rounded-lg shadow-sm border border-green-100 mb-4">

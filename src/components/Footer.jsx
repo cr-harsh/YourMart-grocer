@@ -1,12 +1,10 @@
 import React from "react";
-// Added the missing icon imports
 import { FaFacebook, FaInstagram, FaTwitter } from "react-icons/fa";
 
 const Footer = () => {
     return (
         <footer className="bg-gray-800 text-white py-12 px-4 md:px-0">
             <div className="max-w-6xl mx-auto">
-                {/* Fixed "grdi" typo to "grid" */}
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
                     <div>
                         <h3 className="text-xl font-bold mb-4">YourMart</h3>

@@ -18,7 +18,6 @@ const ProductCard = ({product}) => {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-           // Log view after 500ms of visibility to avoid fast scroll noise
            const timer = setTimeout(() => {
               dispatch(logInteraction({ type: 'view', product }));
            }, 500);
@@ -26,7 +25,7 @@ const ProductCard = ({product}) => {
            return () => clearTimeout(timer);
         }
       },
-      { threshold: 0.5 } // Trigger when 50% visible
+      { threshold: 0.5 } 
     );
 
     if (cardRef.current) {
@@ -37,10 +36,8 @@ const ProductCard = ({product}) => {
   }, [product, dispatch]);
 
   const addToCart = (product)=>{
-    // Log 'add' interaction
     dispatch(logInteraction({ type: 'add', product }));
 
-    // Trigger Fly Animation
     if (imgRef.current) {
       const rect = imgRef.current.getBoundingClientRect();
       window.dispatchEvent(new CustomEvent('fly-to-cart', {
@@ -61,7 +58,7 @@ const ProductCard = ({product}) => {
       dispatch(setCart(updatedCart));
       toast.info("Product quantity updated!")
     }else {
-      dispatch(setCart([...cart, { ...product, unit: 1 }])); //Add product if not already in cart
+      dispatch(setCart([...cart, { ...product, unit: 1 }]));
       toast.success("Added to cart!")
     }
   }
@@ -90,10 +87,8 @@ const ProductCard = ({product}) => {
         <div className='px-4 pt-3 pb-1 bg-white'>
             <p className='text-xs font-semibold text-green-600 uppercase tracking-wider mb-1'>{product.category}</p>
             <h3 className='font-bold text-sm h-[40px] text-gray-800 line-clamp-2 leading-tight group-hover:text-green-700 transition-colors'>{product.name}</h3>
-            {/* <p className='text-xs text-gray-500 mt-1'>{product.quantity || "1 Unit"}</p> */}
             <div className="flex items-center justify-between mt-2">
                <p className='font-bold text-lg text-gray-900'>₹{product.price?.toFixed(2)}</p>
-               {/* Rating or Review count could go here */}
             </div>
         </div>
       </div>

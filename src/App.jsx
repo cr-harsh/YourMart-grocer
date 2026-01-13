@@ -25,11 +25,9 @@ const App = () => {
   useEffect(() => {
     dispatch(restoreSession());
     
-    // Check if it's a returning user (simple check)
+ 
     const lastSession = localStorage.getItem('last_session_ts');
     if (lastSession) {
-       // Only show if last session was > 1 hour ago (mock logic)
-       // toast.info("Welcome back! We've restored your shopping preferences.", { icon: "👋" });
     }
   }, [dispatch]);
 

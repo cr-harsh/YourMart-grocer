@@ -7,9 +7,12 @@ const FlyToCartAnimation = () => {
   useEffect(() => {
     const handleAddToCart = (e) => {
       const { startRect, image } = e.detail;
+      const target = getTargetPosition();
+      
       const newItem = {
         id: Date.now(),
         startRect,
+        target, // Lock target at start of animation to avoid mid-flight shifts if user scrolls
         image,
       };
       setFlyingItems((prev) => [...prev, newItem]);
@@ -17,37 +20,29 @@ const FlyToCartAnimation = () => {
       // Cleanup after animation
       setTimeout(() => {
         setFlyingItems((prev) => prev.filter((item) => item.id !== newItem.id));
-      }, 1000);
+        // optional: dispatch 'cart-arrival' event here if we want exact timing
+        window.dispatchEvent(new CustomEvent('cart-item-arrived')); 
+      }, 800); // Match duration
     };
 
     window.addEventListener('fly-to-cart', handleAddToCart);
     return () => window.removeEventListener('fly-to-cart', handleAddToCart);
   }, []);
 
-  // Target: Cart Icon position (Fixed approx position or dynamic)
-  // For simplicity and robustness, we'll aim for top-right area where cart usually is.
-  // In a real app we'd use a ref from the Navbar, but hardcoded percentages or 
-  // checking DOM element ".cart-icon-ref" is better.
-  // Let's assume cart is at top: 20px, right: 80px (approx based on Navbar)
-  // Or better, logic to find the cart icon.
-  
   const getTargetPosition = () => {
-      // Try to find the cart icon element by ID or class if possible
-      // I'll add an id="cart-icon-btn" to the Navbar cart button later.
       const cartBtn = document.getElementById('cart-icon-btn');
       if (cartBtn) {
           const rect = cartBtn.getBoundingClientRect();
+          // Center of the cart icon
           return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
       }
-      return { x: window.innerWidth - 80, y: 40 }; // Fallback
+      return { x: window.innerWidth - 50, y: 30 }; // Fallback
   };
 
   return (
     <div className="fixed inset-0 pointer-events-none z-[100]">
       <AnimatePresence>
-        {flyingItems.map((item) => {
-            const target = getTargetPosition();
-            return (
+        {flyingItems.map((item) => (
               <motion.img
                 key={item.id}
                 src={item.image}
@@ -59,22 +54,24 @@ const FlyToCartAnimation = () => {
                   height: item.startRect.height,
                   opacity: 1,
                   scale: 1,
+                  borderRadius: '0px'
                 }}
                 animate={{
-                  top: target.y,
-                  left: target.x,
+                  top: item.target.y - 10, // Adjust to center
+                  left: item.target.x - 10,
                   width: 20,
                   height: 20,
-                  opacity: 0.5,
-                  scale: 0.5,
+                  opacity: 0, // Fade out as it hits
+                  scale: 0.2,
+                  borderRadius: '50%'
                 }}
-                exit={{ opacity: 0, scale: 0 }}
-                transition={{ duration: 0.8, ease: "easeInOut" }} // Slower for effect
-                className="rounded-lg object-cover shadow-xl"
-                style={{ zIndex: 1000 }}
+                transition={{ 
+                    duration: 0.8, 
+                    ease: [0.16, 1, 0.3, 1] // Apple-style ease-out
+                }}
+                className="object-cover z-[1000] shadow-2xl mix-blend-multiply"
               />
-            );
-        })}
+        ))}
       </AnimatePresence>
     </div>
   );

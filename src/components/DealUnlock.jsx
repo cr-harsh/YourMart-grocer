@@ -8,9 +8,6 @@ const DealUnlock = () => {
     
     const cartTotal = cart.reduce((total, item) => total + item.price * item.unit, 0);
     
-    // Dynamic Logic:
-    // If Total is between 200 and 500 -> Suggest reaching 500 for 5% off
-    // If Total is between 500 and 1000 -> Suggest reaching 1000 for 10% off
     
     let target = 0;
     let reward = '';
@@ -25,7 +22,7 @@ const DealUnlock = () => {
         reward = '10% Extra Off';
         discount = 0.10;
     } else {
-        return null; // No deal active
+        return null; 
     }
 
     const progress = Math.min((cartTotal / target) * 100, 100);
@@ -45,17 +42,14 @@ const DealUnlock = () => {
                 </span>
             </div>
             
-            {/* Progress Bar background */}
-            <div className="w-full bg-black/20 h-1.5 rounded-full overflow-hidden">
+                        <div className="w-full bg-black/20 h-1.5 rounded-full overflow-hidden">
                 <motion.div 
                     initial={{ width: 0 }}
                     animate={{ width: `${progress}%` }}
                     className="h-full bg-white shadow-[0_0_10px_rgba(255,255,255,0.5)]"
                 />
             </div>
-            
-            {/* Decorative circles */}
-            <div className="absolute -right-4 -bottom-8 w-24 h-24 bg-white/10 rounded-full blur-xl" />
+                        <div className="absolute -right-4 -bottom-8 w-24 h-24 bg-white/10 rounded-full blur-xl" />
             <div className="absolute -left-4 -top-8 w-20 h-20 bg-yellow-400/20 rounded-full blur-xl" />
         </div>
     );

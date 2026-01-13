@@ -98,3 +98,101 @@ export const selectContextualSuggestions = createSelector(
         return missingCategories;
     }
 );
+
+// 4. Bundle Opportunities (Dynamic Nudges)
+// Logic: Suggest adding more items to reach a discount threshold
+export const selectBundleOpportunities = createSelector(
+    (state) => state.cart.cart,
+    (cart) => {
+        const opportunities = [];
+        const categoryCounts = {};
+
+        // Count items per category
+        cart.forEach(item => {
+            categoryCounts[item.category] = (categoryCounts[item.category] || 0) + item.unit;
+        });
+
+        // Define simple rules (could be dynamic/remote in future)
+        // Rule: Buy 3 items of same category, get small discount
+        Object.entries(categoryCounts).forEach(([category, count]) => {
+            const remainder = count % 3;
+            if (remainder !== 0) {
+                opportunities.push({
+                    type: 'bulk_discount',
+                    category,
+                    currentCount: count,
+                    needed: 3 - remainder,
+                    discountPercent: 5,
+                    message: `Add ${3 - remainder} more ${category} to save 5%!`
+                });
+            }
+        });
+
+        // Rule: Cross-Category Bundles (The "Smartness" Upgrade)
+        const has = (cat) => categoryCounts[cat] > 0;
+
+        // Bundle 1: Breakfast Special (Dairy + Bakery)
+        if (has('Dairy') && !has('Bakery')) {
+            opportunities.push({
+                type: 'cross_sell',
+                missingCategory: 'Bakery',
+                partnerCategory: 'Dairy',
+                discountPercent: 8,
+                message: "Add Bakery items with your Dairy to save 8%!"
+            });
+        }
+
+        // Bundle 2: Healthy Living (Vegetables + Fruits)
+        if (has('Vegetables') && !has('Fruits')) {
+            opportunities.push({
+                type: 'cross_sell',
+                missingCategory: 'Fruits',
+                partnerCategory: 'Vegetables',
+                discountPercent: 6,
+                message: "Add Fruits to your Vegetables for a complete diet & 6% OFF!"
+            });
+        }
+
+        // Rule: If total cart value > 500 but < 1000
+        const totalValue = cart.reduce((sum, item) => sum + (item.price * item.unit), 0);
+        if (totalValue > 500 && totalValue < 1000) {
+            opportunities.push({
+                type: 'threshold_discount',
+                neededAmount: 1000 - totalValue,
+                discountPercent: 10,
+                message: `Add products worth ₹${(1000 - totalValue).toFixed(0)} more to get Flat 10% OFF!`
+            });
+        }
+
+        return opportunities;
+    }
+);
+
+// 5. Analytics Selectors (Dashboard Data)
+export const selectAnalyticsData = createSelector(
+    (state) => state.userBehavior.history,
+    (state) => state.cart.cart, // cart might be needed for current session spend
+    (history, cart) => {
+        // Mock Spending Trend (in real app, this would be from Order History)
+        // We'll simulate it based on history timestamps
+        const spendingTrend = [450, 120, 800, 320, 150];
+
+        // Most Viewed Category
+        const viewCounts = {};
+        history.filter(h => h.action === 'view').forEach(h => {
+            viewCounts[h.category] = (viewCounts[h.category] || 0) + 1;
+        });
+        const mostViewed = Object.entries(viewCounts).sort((a, b) => b[1] - a[1])[0] || ['None', 0];
+
+        // Engagement Score (Fun Metric)
+        // 10 pts per add, 1 pt per view
+        const score = history.reduce((acc, curr) => acc + (curr.action === 'add' ? 10 : 1), 0);
+
+        return {
+            mostViewedCategory: mostViewed[0],
+            engagementScore: score,
+            spendingTrend,
+            totalInteractions: history.length
+        };
+    }
+);

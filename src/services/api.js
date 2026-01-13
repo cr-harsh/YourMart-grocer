@@ -1,7 +1,5 @@
 import { toast } from 'react-toastify';
 
-// Import Assets (Migrated from Data.jsx)
-// We rely on Vite's asset handling for these imports to work.
 import Amul from "../assets/Amul.avif";
 import Amul2 from "../assets/Amul2.avif";
 import potato from "../assets/potato.avif";
@@ -58,7 +56,6 @@ const BASE_PRODUCTS = [
     { id: 27, name: "Country Harvest Seeded Burger Bun", category: "Bakery", price: 32, image: bread3, quantity: "200 g (4 pieces)", unit: 1 },
 ];
 
-// Additional Unique Products (Reusing assets for similar categories)
 const NEW_PRODUCTS = [
     { id: 101, name: "Amul Gold Full Cream Milk", category: "Dairy", price: 34, image: Amul, quantity: "500ml", unit: 1 },
     { id: 102, name: "Amul Masti Spiced Buttermilk", category: "Dairy", price: 15, image: Amul2, quantity: "200ml", unit: 1 },
@@ -93,14 +90,12 @@ const NEW_PRODUCTS = [
 
 const MOCK_PRODUCTS = [...BASE_PRODUCTS, ...NEW_PRODUCTS];
 
-// Utility to simulate network delay
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 const api = {
     getProducts: async () => {
-        await delay(600 + Math.random() * 400); // 600ms - 1000ms delay
+        await delay(600 + Math.random() * 400);
 
-        // Simulate 1% error rate
         if (Math.random() < 0.01) {
             throw new Error("Failed to fetch products. Please try again.");
         }
@@ -109,7 +104,7 @@ const api = {
     },
 
     searchProducts: async (query) => {
-        await delay(300); // Faster response for search
+        await delay(300);
         if (!query) return [];
 
         const lowerQuery = query.toLowerCase();
@@ -121,7 +116,7 @@ const api = {
 
     getTrending: async () => {
         await delay(400);
-        // Return 3 random products
+
         return [...MOCK_PRODUCTS].sort(() => 0.5 - Math.random()).slice(0, 3);
     }
 };

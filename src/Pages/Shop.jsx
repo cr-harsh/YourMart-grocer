@@ -91,7 +91,6 @@ const Shop = () => {
         </div>
       </div>
       
-      {/* Category Pills (Optional Quick Filters for mobile) */}
       <div className="md:hidden flex gap-2 overflow-x-auto pb-4 mb-2 no-scrollbar">
           {categories.slice(1).map(cat => (
               <button 
@@ -103,8 +102,6 @@ const Shop = () => {
               </button>
           ))}
       </div>
-
-      {/* Product Grid */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 lg:gap-6">
         
         {/* Loading State: Skeletons */}

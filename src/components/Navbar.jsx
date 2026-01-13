@@ -1,16 +1,18 @@
 import React, { useState, useEffect, useRef } from 'react'
 import Logo from "../assets/Logo.png"
-import { ShoppingCart, Search, X, Clock, TrendingUp, ChevronRight } from 'lucide-react'
+import { ShoppingCart, Search, X, Clock, TrendingUp, ChevronRight, BarChart2 } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
 import CartComp from './CartComp'
 import { useSelector } from 'react-redux'
 import { HiMenuAlt1, HiMenuAlt3 } from 'react-icons/hi'
 import ResponsiveMenu from './ResponsiveMenu'
 import useSmartSearch from '../hooks/useSmartSearch'
+import AnalyticsDashboard from './AnalyticsDashboard'
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false)
   const [isNavOpen, setIsNavOpen] = useState(false)
+  const [isDashboardOpen, setIsDashboardOpen] = useState(false)
   const { cart } = useSelector(store => store.cart)
 
   const onClose = () => setIsOpen(false)
@@ -57,6 +59,19 @@ const Navbar = () => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [searchRef]);
+
+  // Cart Shake Animation
+  const [isShaking, setIsShaking] = useState(false);
+
+  useEffect(() => {
+    const handleCartArrival = () => {
+       setIsShaking(true);
+       setTimeout(() => setIsShaking(false), 300); // Shake duration
+    };
+
+    window.addEventListener('cart-item-arrived', handleCartArrival);
+    return () => window.removeEventListener('cart-item-arrived', handleCartArrival);
+  }, []);
 
   useEffect(() => {
     document.body.style.overflow = isOpen ? "hidden" : "auto"
@@ -210,12 +225,20 @@ const Navbar = () => {
 
             {/* ICONS */}
             <div className="flex items-center gap-4">
+              <button 
+                onClick={() => setIsDashboardOpen(true)}
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors group hidden md:block" // Hidden on mobile for space
+                title="Your Stats"
+              >
+                <BarChart2 className="w-6 h-6 text-gray-600 group-hover:text-indigo-600 transition-colors" />
+              </button>
+
               <button
                 id="cart-icon-btn"
                 onClick={() => setIsOpen(true)}
-                className="relative p-2 hover:bg-gray-100 rounded-full transition-colors group"
+                className={`relative p-2 hover:bg-gray-100 rounded-full transition-all group ${isShaking ? 'animate-[wiggle_0.3s_ease-in-out]' : ''}`}
               >
-                <ShoppingCart className="w-6 h-6 text-gray-700 group-hover:text-green-600 transition-colors" />
+                <ShoppingCart className={`w-6 h-6 text-gray-700 group-hover:text-green-600 transition-colors ${isShaking ? 'text-green-600' : ''}`} />
                 {cart.length > 0 && (
                   <span className="absolute top-0 right-0 bg-green-600 text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center shadow-sm animate-bounce">
                     {cart.length}
@@ -255,6 +278,8 @@ const Navbar = () => {
       )}
 
       <CartComp isOpen={isOpen} onClose={onClose} />
+      
+      <AnalyticsDashboard isOpen={isDashboardOpen} onClose={() => setIsDashboardOpen(false)} />
     </>
   )
 }

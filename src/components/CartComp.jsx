@@ -6,35 +6,32 @@ import { GiShoppingBag } from 'react-icons/gi'
 import { LuNotebookText } from 'react-icons/lu'
 import { MdDeliveryDining } from 'react-icons/md'
 import { useDispatch, useSelector } from 'react-redux'
-import { setCart } from '../Redux/CartSlice'
+import { setCart, addToCart, removeFromCart, updateQuantity, selectCartTotal } from '../Redux/CartSlice'
+import BundleNudge from './BundleNudge'
+import SmartSuggestions from './SmartSuggestions'
 
 const CartComp = ({ isOpen, onClose }) => {
     const { cart } = useSelector(store => store.cart)
+    const { subtotal, savings, finalTotal, isDiscountApplied } = useSelector(selectCartTotal);
     const dispatch = useDispatch()
 
-    const updateQuantity = (cart, productId, action) => {
-        dispatch(setCart(cart.map(item => {
-            if (item.id === productId) {
-                let newUnit = item.unit;
-                if (action === "increase") {
-                    newUnit += 1;
-                } else if (action === "decrease") {
-                    newUnit -= 1;
-                }
-                return newUnit > 0 ? { ...item, unit: newUnit } : null;
-            }
-            return item;
-        }).filter(item => item != null) // remove items with quantity 0
-        ))
+    const increaseQuantity = (item) => {
+        dispatch(updateQuantity({ id: item.id, quantity: item.unit + 1 }));
     }
 
-    const totalPrice = cart.reduce((total, item) => total + item.price * item.unit, 0)
-    
+    const decreaseQuantity = (item) => {
+        if (item.unit > 1) {
+            dispatch(updateQuantity({ id: item.id, quantity: item.unit - 1 }));
+        } else {
+            dispatch(removeFromCart(item.id));
+        }
+    }
+
     // FREE SHIPPING LOGIC
     const FREE_SHIPPING_THRESHOLD = 50;
-    const progress = Math.min((totalPrice / FREE_SHIPPING_THRESHOLD) * 100, 100);
-    const isFreeShipping = totalPrice >= FREE_SHIPPING_THRESHOLD;
-    const amountNeeded = FREE_SHIPPING_THRESHOLD - totalPrice;
+    const progress = Math.min((finalTotal / FREE_SHIPPING_THRESHOLD) * 100, 100);
+    const isFreeShipping = finalTotal >= FREE_SHIPPING_THRESHOLD;
+    const amountNeeded = FREE_SHIPPING_THRESHOLD - finalTotal;
 
     return (
       <AnimatePresence>
@@ -61,7 +58,12 @@ const CartComp = ({ isOpen, onClose }) => {
                <div className="p-5 h-[calc(100%-180px)] overflow-y-auto no-scrollbar">
                   
                   {/* SMART ASSISTANT MODULES */}
-                  {cart.length > 0 && <DealUnlock />}
+                  {cart.length > 0 && (
+                      <>
+                        <BundleNudge />
+                        <SmartSuggestions />
+                      </>
+                  )}
                   
                   {/* Free Shipping Bar */}
                   {cart.length > 0 && (
@@ -75,10 +77,10 @@ const CartComp = ({ isOpen, onClose }) => {
                          </div>
                          <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
                             <motion.div 
-                              initial={{ width: 0 }}
-                              animate={{ width: `${progress}%` }}
-                              transition={{ duration: 0.5, ease: "easeOut" }}
-                              className={`h-full ${isFreeShipping ? 'bg-gradient-to-r from-green-500 to-emerald-400' : 'bg-green-500'}`}
+                               initial={{ width: 0 }}
+                               animate={{ width: `${progress}%` }}
+                               transition={{ duration: 0.5, ease: "easeOut" }}
+                               className={`h-full ${isFreeShipping ? 'bg-gradient-to-r from-green-500 to-emerald-400' : 'bg-green-500'}`}
                             />
                          </div>
                          {!isFreeShipping && (
@@ -119,7 +121,7 @@ const CartComp = ({ isOpen, onClose }) => {
                                         <div>
                                             <div className="flex justify-between items-start">
                                                 <h3 className="font-semibold text-gray-800 text-sm line-clamp-2 leading-tight pr-2">{product.name}</h3>
-                                                <button onClick={()=>removeFromCart(product.id)} className="text-gray-400 hover:text-red-500 transition-colors p-1">
+                                                <button onClick={()=>dispatch(removeFromCart(product.id))} className="text-gray-400 hover:text-red-500 transition-colors p-1">
                                                     <X className="w-3.5 h-3.5" />
                                                 </button>
                                             </div>
@@ -127,9 +129,9 @@ const CartComp = ({ isOpen, onClose }) => {
                                         </div>
                                         <div className="flex justify-between items-center mt-2">
                                             <div className="flex items-center gap-2 bg-gray-50 rounded-lg p-1">
-                                                <button onClick={()=>decreaseQuantity(product.id, product.unit)} className="w-6 h-6 flex items-center justify-center bg-white rounded shadow-sm text-gray-600 hover:text-green-600 text-xs font-bold transition-colors">-</button>
+                                                <button onClick={()=>decreaseQuantity(product)} className="w-6 h-6 flex items-center justify-center bg-white rounded shadow-sm text-gray-600 hover:text-green-600 text-xs font-bold transition-colors">-</button>
                                                 <span className="text-xs font-bold w-4 text-center">{product.unit}</span>
-                                                <button onClick={()=>addToCart(product)} className="w-6 h-6 flex items-center justify-center bg-white rounded shadow-sm text-gray-600 hover:text-green-600 text-xs font-bold transition-colors">+</button>
+                                                <button onClick={()=>increaseQuantity(product)} className="w-6 h-6 flex items-center justify-center bg-white rounded shadow-sm text-gray-600 hover:text-green-600 text-xs font-bold transition-colors">+</button>
                                             </div>
                                             <p className="font-bold text-gray-900">₹{(product.price * product.unit).toFixed(2)}</p>
                                         </div>
@@ -146,8 +148,17 @@ const CartComp = ({ isOpen, onClose }) => {
                          <h1 className='text-gray-800 font-bold text-lg border-b border-gray-200 pb-2'>Bill Details</h1>
                          <div className='flex justify-between items-center text-sm'>
                              <div className='flex gap-2 items-center text-gray-600'><LuNotebookText className="text-gray-400" /> Item Total</div>
-                             <p className='text-gray-800 font-medium'>₹{totalPrice.toFixed(2)}</p>
+                             <p className='text-gray-800 font-medium'>₹{subtotal.toFixed(2)}</p>
                          </div>
+                         
+                         {/* Savings Row - Only show if savings exist */}
+                         {isDiscountApplied && (
+                             <div className='flex justify-between items-center text-sm animate-in fade-in slide-in-from-right-4'>
+                                 <div className='flex gap-2 items-center text-green-600 font-semibold'><PartyPopper className="w-4 h-4" /> Total Savings</div>
+                                 <p className='text-green-600 font-bold'>- ₹{savings.toFixed(2)}</p>
+                             </div>
+                         )}
+
                          <div className='flex justify-between items-center text-sm'>
                              <div className='flex gap-2 items-center text-gray-600'><MdDeliveryDining className="text-gray-400" /> Delivery Fee</div>
                              <p className={`${isFreeShipping ? 'text-green-600' : 'text-gray-800'} font-medium`}>
@@ -160,7 +171,7 @@ const CartComp = ({ isOpen, onClose }) => {
                          </div>
                          <div className='border-t border-gray-200 pt-3 flex justify-between items-center'>
                              <h1 className='font-bold text-lg text-gray-800'>Grand Total</h1>
-                             <p className='font-bold text-lg text-green-600'>₹{(totalPrice + (isFreeShipping ? 0 : 15) + 2).toFixed(2)}</p>
+                             <p className='font-bold text-lg text-green-600'>₹{(finalTotal + (isFreeShipping ? 0 : 15) + 2).toFixed(2)}</p>
                          </div>
                      </div>
                  )}
@@ -172,7 +183,7 @@ const CartComp = ({ isOpen, onClose }) => {
                            <button className='w-full bg-green-600 hover:bg-green-700 text-white py-3.5 px-4 rounded-xl flex justify-between items-center shadow-lg shadow-green-200 active:scale-[0.98] transition-all group'>
                                <div className="text-left">
                                    <p className="text-xs font-medium opacity-90 text-green-100">Total Payable</p>
-                                   <h1 className='font-bold text-lg'>₹{(totalPrice + (isFreeShipping ? 0 : 15) + 2).toFixed(2)}</h1>
+                                   <h1 className='font-bold text-lg'>₹{(finalTotal + (isFreeShipping ? 0 : 15) + 2).toFixed(2)}</h1>
                                </div>
                                <div className='flex gap-2 items-center font-bold text-sm bg-white/20 py-1.5 px-3 rounded-lg group-hover:bg-white/30 transition-colors'>
                                    <span>Checkout</span>
