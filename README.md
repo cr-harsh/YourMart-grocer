@@ -1,16 +1,29 @@
-# React + Vite
+🛒 YourMart — Smart Grocery Assistant
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+YourMart is a modern React + Redux grocery shopping app with a Smart Assistant that helps users save money and shop efficiently.
 
-Currently, two official plugins are available:
+🚀 Key Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Smart Cart Intelligence: Tracks user behavior, offers bulk (3+ items → 5%) and threshold (₹1000+ → 10%) discounts.
 
-## React Compiler
+Home Page & UX: Hero banner, category carousel, featured products, hover effects, micro-animations.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Micro-Interactions: Fly-to-cart animation, cart shake effect, bundle nudges.
 
-## Expanding the ESLint configuration
+Advanced Bundles: Cross-category suggestions (e.g., Dairy → Bakery 8% off).
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Analytics Dashboard: Engagement score, top interest, spending analytics.
+
+Responsive: Fully mobile-friendly, dynamic cart icon, smooth scaling visuals.
+
+🔹 Tech Stack
+
+React | Redux | React Router | LocalStorage | CSS / Animations
+
+🌐 Live Demo
+
+YourMart Live
+
+📂 GitHub Repo
+
+YourMart Repo
