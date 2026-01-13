@@ -4,18 +4,38 @@ YourMart is a modern React + Redux grocery shopping app with a Smart Assistant t
 
 🚀 Key Features
 
-Smart Cart Intelligence: Tracks user behavior, offers bulk (3+ items → 5%) and threshold (₹1000+ → 10%) discounts.
+Smart Cart Intelligence: Tracks user behavior, bulk (3+ items → 5%) & threshold (₹1000+ → 10%) discounts
 
-Home Page & UX: Hero banner, category carousel, featured products, hover effects, micro-animations.
+Micro-Interactions: Fly-to-cart animation, cart shake effect, dynamic nudges
 
-Micro-Interactions: Fly-to-cart animation, cart shake effect, bundle nudges.
+Advanced Bundles: Cross-category suggestions (e.g., Dairy → Bakery 8% off)
 
-Advanced Bundles: Cross-category suggestions (e.g., Dairy → Bakery 8% off).
+Analytics Dashboard: Engagement score, top interest, spending analytics
 
-Analytics Dashboard: Engagement score, top interest, spending analytics.
+Responsive Design: Fully mobile-friendly, sticky cart icon, smooth animations
 
-Responsive: Fully mobile-friendly, dynamic cart icon, smooth scaling visuals.
+🧪 Special Test Cases / Demo Checks
 
-🔹 Tech Stack
+“You Forgot This” Feature
+
+Browse a category (e.g., Vegetables), then add a different category item (e.g., Dairy)
+
+Open cart → shows previously viewed category items as suggestions
+
+Bulk Saver Nudge
+
+Add 2 items of the same category → nudge appears: “Add 1 more to save 5%”
+
+Add the third item → discount applied in bill details
+
+Big Spender Discount
+
+Add items until total > ₹1000 → 10% discount automatically applied
+
+Cross-Category Bundle
+
+Add Dairy → shows Bakery nudge: “Add Bakery items to save 8%”
+
+🛠 Tech Stack
 
 React | Redux | React Router | LocalStorage | CSS / Animations
