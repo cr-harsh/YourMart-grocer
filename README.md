@@ -19,11 +19,3 @@ Responsive: Fully mobile-friendly, dynamic cart icon, smooth scaling visuals.
 🔹 Tech Stack
 
 React | Redux | React Router | LocalStorage | CSS / Animations
-
-🌐 Live Demo
-
-YourMart Live
-
-📂 GitHub Repo
-
-YourMart Repo
